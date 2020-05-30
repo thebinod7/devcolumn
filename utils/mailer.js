@@ -14,10 +14,12 @@ let filePath;
 
 const send = (options) => {
   new Promise((resolve, reject) => {
+    //Can add swith case instead of if else to choose template base on action.
     if (options.action === "demo") {
-      filePath = "../../public/email/demo.hbs";
+      filePath = "../../public/email/demo.hbs"; //Path of an email template.
     }
 
+    // Helper function to read html file.
     const readHTMLFile = (path, callback) => {
       fs.readFile(path, { encoding: "utf-8" }, (err, html) => {
         if (err) {
@@ -28,6 +30,7 @@ const send = (options) => {
       });
     };
 
+    // Create trasporter object using nodemailer and credentials.
     const transporter = nodemailer.createTransport({
       service: "gmail",
       secure: false,
@@ -46,6 +49,7 @@ const send = (options) => {
         subject: options.subject || "No subject sent!",
         html: htmlToSend,
       };
+      //Send email with mailOptions created above.
       transporter.sendMail(mailOptions, (error, response) => {
         if (error) {
           reject(error);
