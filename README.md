@@ -1,4 +1,4 @@
-1. Create config folder inside project root directory.
+1. Clone this project and create config folder inside project root directory.
 2. Create local.json file.
 3. Pase following config code.
 
