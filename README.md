@@ -1,6 +1,6 @@
-# Create config folder inside project root directory.
-# Create local.json file.
-# Pase following config code.
+Create config folder inside project root directory.
+Create local.json file.
+Pase following config code.
 {
   "app_url": "http://localhost:8888",
   "app": {
@@ -11,6 +11,6 @@
   }
 }
 
-# Go to project directory.
-# Run 'yarn install' without quotes.
-# Run 'yarn start'
+Go to project directory.
+Run 'yarn install' without quotes.
+Run 'yarn start'
