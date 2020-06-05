@@ -30,6 +30,7 @@ const port = Number(process.env.PORT || 8888);
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+app.set("trust proxy", true);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
