@@ -1,68 +1,67 @@
 const express = require("express");
-const path = require("path");
-const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
-const morgan = require("morgan");
-const mongoose = require("mongoose");
-const helmet = require("helmet");
-
-const RouteManager = require("./routes");
-const config = require("config");
-
-//mongoose.Promise = global.Promise;
-mongoose.connect(config.get("app.db"));
-
-mongoose.connection.on("connected", function () {
-  console.log("Connected to database successfully.");
-});
-
-mongoose.connection.on("error", function (err) {
-  console.log("Database error:" + " " + err);
-});
-
+const nodemailer = require("nodemailer");
 const app = express();
+/*
+    Here we are configuring our SMTP Server details.
+    STMP is mail server which is responsible for sending and recieving email.
+*/
+const smtpTransport = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: "thebinod7@gmail.com",
+    pass: "helloworld@gmail.com",
+  },
+});
+var rand, mailOptions, host, link;
+/*------------------SMTP Over-----------------------------*/
 
-app.use(morgan("combined"));
-app.use(helmet());
+/*------------------Routing Started ------------------------*/
 
-const port = Number(process.env.PORT || 8888);
-
-// view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs");
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cookieParser());
-
-// Add headers
-app.use(function (req, res, next) {
-  // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "*");
-
-  // Request methods you wish to allow
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-  );
-
-  // Request headers you wish to allow
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-Requested-With,content-type,authorization"
-  );
-
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  //res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
+app.get("/", function (req, res) {
+  res.sendfile("index.html");
+});
+app.get("/send", function (req, res) {
+  rand = Math.floor(Math.random() * 100 + 54);
+  host = req.get("host");
+  link = "http://" + req.get("host") + "/verify?id=" + rand;
+  mailOptions = {
+    to: req.query.to,
+    subject: "Please confirm your Email account",
+    html:
+      "Hello,<br> Please Click on the link to verify your email.<br><a href=" +
+      link +
+      ">Click here to verify</a>",
+  };
+  console.log(mailOptions);
+  smtpTransport.sendMail(mailOptions, function (error, response) {
+    if (error) {
+      console.log(error);
+      res.end("error");
+    } else {
+      console.log("Message sent: " + response.message);
+      res.end("sent");
+    }
+  });
 });
 
-// ROUTES FOR OUR API
-app.use("/", RouteManager);
-app.use(express.static(path.join(__dirname, "public")));
+app.get("/verify", function (req, res) {
+  console.log(req.protocol + ":/" + req.get("host"));
+  if (req.protocol + "://" + req.get("host") == "http://" + host) {
+    console.log("Domain is matched. Information is from Authentic email");
+    if (req.query.id == rand) {
+      console.log("email is verified");
+      res.end("<h1>Email " + mailOptions.to + " is been Successfully verified");
+    } else {
+      console.log("email is not verified");
+      res.end("<h1>Bad Request</h1>");
+    }
+  } else {
+    res.end("<h1>Request is from unknown source");
+  }
+});
 
-//Start server
-app.listen(port, function () {
-  console.log("Server running at port:" + port);
+/*--------------------Routing Over----------------------------*/
+
+app.listen(3000, function () {
+  console.log("Express Started on Port 3000");
 });
