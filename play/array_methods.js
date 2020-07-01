@@ -1,9 +1,12 @@
 let fruits = "apple,banana,mango";
-let _array = fruits.split(","); // Output: ['apple', 'banana','mango']
+let _array = fruits.split(",");
+// Output: ['apple', 'banana','mango']
 
 let input_array = ["apple", "banana", "mango"];
-let res = input_array.toString(); // Output: apple, banana, mango
+let res = input_array.toString();
+// Output: apple, banana, mango
 
+//
 let today = new Date();
 let new_date = new Date();
 new_date.setDate(today.getDate() + 2);
