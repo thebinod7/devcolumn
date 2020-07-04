@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const helmet = require("helmet");
 
 const RouteManager = require("./routes");
 const config = require("config");
@@ -22,6 +23,7 @@ const app = express();
 
 // To log requests inside app.
 app.use(morgan("combined"));
+app.use(helmet());
 
 const port = Number(config.get("app.port") || 8888);
 
