@@ -101,12 +101,12 @@
         <article>
             <p id="status">Not connected</p>
             <ul id="stocksPrice"></ul>
+            <div id="notificaitons"></div>
         </article>
-
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
             connected = document.getElementById("connected");
             stocksPrice = document.getElementById("stocksPrice");
-            state = document.getElementById("status");
 
             if (window.WebSocket === undefined) {
                 state.innerHTML = "sockets not supported";
@@ -139,29 +139,34 @@
             }
 
             function onOpen(evt) {
-                state.innerHTML = "OPENED, connection";
+                $("#status").html("<p>Connection opened!</p>");
             }
 
             function onClose(evt) {
-                state.innerHTML = "CLOSED, connection";
+                $("#status").html("<p>Connection closed!</p>");
             }
 
             function onMessage(evt) {
-                let data = evt.data;
-                stocksPrice.innerHTML = "Latest price of Litecoin:" + data;
+                let data = JSON.parse(evt.data);
+                if (data.length) {
+                    data.forEach(d => {
+                        console.log("D:", d);
+                        $("#notificaitons").append("<p>" + d.message + "</p>");
+                    });
+                }
             }
 
             function onError(evt) {
                 console.log("ERR", evt);
             }
 
-            function addMessage(stockprice) {
-                websocket.send(stockprice);
+            function addMessage(notify) {
+                websocket.send(notify);
             }
             setInterval(function() {
-                let stockprice = Math.floor(Math.random() * 1000);
-                addMessage(stockprice);
-            }, 1000);
+                //let stockprice = Math.floor(Math.random() * 1000);
+                addMessage("NOTIFY_ARTICLE");
+            }, 5000);
         </script>
     </section>
 </body>
