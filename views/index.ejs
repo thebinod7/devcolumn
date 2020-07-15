@@ -1,11 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home - <%= title %></title>
-  </head>
-  <body>
-    <h3><%= message %></h3>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Home - <%= title %></title>
+    </head>
+    <body>
+        <h3><%= message %></h3>
+
+        <div>
+            <h3>Real time data:</h3>
+            <p id="output"></p>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <script>
+            $(function() {
+                window.WebSocket = window.WebSocket || window.MozWebSocket;
+
+                let connection = new WebSocket(
+                    "ws://127.0.0.1:8888/notify/:msg"
+                );
+
+                connection.onopen = function() {
+                    // connection is opened and ready to use
+                };
+
+                connection.onerror = function(error) {
+                    console.log("Error===", error);
+                };
+
+                connection.onmessage = function(message) {
+                    console.log("=====loadin====");
+                    try {
+                        console.log("Message===", message);
+                        $("#realtimeData").html(message.data);
+                    } catch (e) {
+                        console.log(
+                            "This doesn't look like a valid JSON: ",
+                            message.data
+                        );
+                        return;
+                    }
+                    // handle incoming message
+                };
+
+                setTimeout(function timeout() {
+                    connection.send(Date.now());
+                }, 500);
+            });
+        </script>
+    </body>
 </html>
