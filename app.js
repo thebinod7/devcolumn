@@ -27,6 +27,10 @@ const app = express();
 
 const wss = new WebSocket.Server({ server: app.listen(port) });
 
+// client.on("connect", function() {
+//     console.log("You are now connected to redis.");
+// });
+
 // wss.on("connection", socket => {
 //     socket.on("message", message => {
 //         console.log(`received from a client: ${message}`);

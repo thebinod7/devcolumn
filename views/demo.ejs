@@ -1,7 +1,7 @@
 <body>
     <section id="wrapper">
         <header>
-            <h1>HTML5 Chat</h1>
+            <h1>Notification Demo</h1>
         </header>
 
         <style>
@@ -149,8 +149,8 @@
             function onMessage(evt) {
                 let data = JSON.parse(evt.data);
                 if (data.length) {
+                    $("#notificaitons").html("");
                     data.forEach(d => {
-                        console.log("D:", d);
                         $("#notificaitons").append("<p>" + d.message + "</p>");
                     });
                 }
@@ -160,13 +160,13 @@
                 console.log("ERR", evt);
             }
 
-            function addMessage(notify) {
-                websocket.send(notify);
+            function addMessage() {
+                websocket.send(456);
             }
             setInterval(function() {
                 //let stockprice = Math.floor(Math.random() * 1000);
-                addMessage("NOTIFY_ARTICLE");
-            }, 5000);
+                addMessage();
+            }, 2000);
         </script>
     </section>
 </body>

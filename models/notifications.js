@@ -8,16 +8,19 @@ const schema = mongoose.Schema(
             default: "ARTICLE_PUBLISH"
         },
         entity: { type: String, default: "I am an article" }, // Eg: Article ID
+        redirect_url: { type: String, default: "https://devcolumn.com" },
         message: {
             type: String,
             required: true,
             default: "Hey, you got new notification."
         },
-        notifiers: {
-            users: [{ type: String }], // User IDs
-            group: { type: String, enum: ["Admin", "Editor", "Contributor"] } // EG Admins, Editors,
-        },
-        isRead: { type: Boolean, default: false },
+        notifiers: [
+            {
+                _id: false,
+                userId: { type: String },
+                isRead: { type: Boolean, default: false }
+            }
+        ], // User IDs
         createdBy: { type: String, default: "BINOD" } // Eg: User ID
     },
     {
