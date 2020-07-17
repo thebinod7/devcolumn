@@ -15,62 +15,45 @@ const add = payload => {
     return obj.save();
 };
 
-const list = async ({ user }) => {
-    let userId = user.toString();
+const list = async userid => {
+    let filter = {};
+    // let q = JSON.parse(query);
+    // if (q.lastFetchedAt) {
+    //     filter = { created_at: { $gt: new Date(q.lastFetchedAt) } };
+    // }
+    let user = userid.toString();
+    console.log(user);
     let data = await NotifyModel.aggregate([
         { $sort: { created_at: -1 } },
         { $limit: 15 },
         {
             $match: {
-                notifiers: {
-                    $elemMatch: {
-                        isRead: false,
-                        userId: userId
-                    }
-                }
+                $and: [
+                    {
+                        notifiers: {
+                            $elemMatch: {
+                                isRead: false,
+                                userId: user
+                            }
+                        }
+                    },
+                    filter
+                ]
             }
         }
-        // {
-        //     $unwind: {
-        //         path: "$notifiers",
-        //         preserveNullAndEmptyArrays: true
-        //     }
-        // }
     ]);
+    console.log("Data:", data);
     return data;
 };
 
-// const listAll = async () => {
-//     let data = await NotifyModel.aggregate([
-//         { $sort: { created_at: -1 } },
-//         { $limit: 10 },
-//         {
-//             $match: {
-//                 notifiers: {
-//                     $elemMatch: {
-//                         isRead: false
-//                     }
-//                 }
-//             }
-//         },
-//         {
-//             $unwind: { path: "$notifiers", preserveNullAndEmptyArrays: true }
-//         },
-//         {
-//             $project: {
-//                 entity: 1,
-//                 entity_type: 1,
-//                 notifiers: 1
-//             }
-//         }
-//     ]);
-//     // .unwind("notifiers.userId");
-//     //  .group({ _id: "$notifiers.userId", data: { $push: "$notifiers" } });
-
-//     console.log("Data===", data);
-
-//     return data;
-// };
+const updateRead = (notifyId, userId) => {
+    let user = userId.toString();
+    return NotifyModel.update(
+        { _id: notifyId, "notifiers.userId": user },
+        { $set: { "notifiers.$.isRead": true } },
+        { new: true }
+    );
+};
 
 const listAll = ({ limit = 100, start = 0, user }) => {
     return DataUtils.paging({
@@ -97,4 +80,4 @@ const listAll = ({ limit = 100, start = 0, user }) => {
         ]
     });
 };
-module.exports = { add, list, listAll };
+module.exports = { add, list, listAll, updateRead };

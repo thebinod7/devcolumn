@@ -149,15 +149,53 @@
             }
 
             function onMessage(evt) {
-                let data = JSON.parse(evt.data);
-                if (data.length) {
-                    $("#notificaitons").html("");
-                    data.forEach(d => {
-                        console.log("Message:", d.message);
-                        $("#notificaitons").append("<p>" + d.message + "</p>");
-                    });
-                } else {
-                    $("#notificaitons").html("You dont have any notifics.");
+                let jsonData = evt.data ? JSON.parse(evt.data) : [];
+                let stringData = evt.data ? evt.data : "";
+
+                let all_notifications = jsonData;
+
+                console.log("======", all_notifications);
+
+                if (jsonData.length) {
+                    // let existing = getNotification();
+                    // if (existing) {
+                    //     let existing_json = JSON.parse(existing);
+                    //     console.log("Existing:", existing_json);
+                    //     all_notifications = existing_json.data.concat(jsonData);
+                    // } else {
+                    //     all_notifications = jsonData;
+                    // }
+                    console.log("All Notificaitons:", all_notifications);
+                    if (all_notifications && all_notifications.length) {
+                        setNotification(JSON.stringify(all_notifications));
+                        $("#notificaitons").html("");
+                        all_notifications.forEach(d => {
+                            $("#notificaitons").append(
+                                "<p>" + d.message + "</p>"
+                            );
+                        });
+                    }
+                }
+            }
+
+            function concatArray(existing_json, new_fetch) {
+                let result = [...existing_json, ...new_fetch];
+                return result;
+            }
+
+            function getNotification() {
+                return localStorage.getItem("notification");
+            }
+
+            function setNotification(data) {
+                let obj = {};
+                let json = JSON.parse(data);
+                if (json && json.length) {
+                    obj = {
+                        lastFetchedAt: json[0].created_at,
+                        data: json
+                    };
+                    localStorage.setItem("notification", JSON.stringify(obj));
                 }
             }
 
@@ -167,11 +205,17 @@
 
             function addMessage() {
                 let _id = $("#userId").val();
-                websocket.send(_id);
+                let query = { user: _id };
+                let notifics = getNotification();
+                let data = notifics ? JSON.parse(notifics) : "";
+                // if (data && data.lastFetchedAt) {
+                //     query.lastFetchedAt = data.lastFetchedAt;
+                // }
+                websocket.send(JSON.stringify(query));
             }
             setInterval(function() {
                 addMessage();
-            }, 2000);
+            }, 5000);
         </script>
     </section>
 </body>
