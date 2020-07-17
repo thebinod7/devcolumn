@@ -15,29 +15,27 @@ const add = payload => {
     return obj.save();
 };
 
-const list = async () => {
+const list = async ({ user }) => {
+    let userId = user.toString();
     let data = await NotifyModel.aggregate([
         { $sort: { created_at: -1 } },
-        { $limit: 10 },
+        { $limit: 15 },
         {
             $match: {
-                $and: [
-                    {
-                        notifiers: {
-                            $elemMatch: {
-                                isRead: false
-                            }
-                        }
+                notifiers: {
+                    $elemMatch: {
+                        isRead: false,
+                        userId: userId
                     }
-                ]
-            }
-        },
-        {
-            $unwind: {
-                path: "$notifiers",
-                preserveNullAndEmptyArrays: true
+                }
             }
         }
+        // {
+        //     $unwind: {
+        //         path: "$notifiers",
+        //         preserveNullAndEmptyArrays: true
+        //     }
+        // }
     ]);
     return data;
 };
@@ -74,7 +72,7 @@ const list = async () => {
 //     return data;
 // };
 
-const listAll = ({ limit = 100, start = 0 }) => {
+const listAll = ({ limit = 100, start = 0, user }) => {
     return DataUtils.paging({
         start,
         limit,
@@ -83,7 +81,7 @@ const listAll = ({ limit = 100, start = 0 }) => {
         query: [
             {
                 $match: {
-                    users: {
+                    notifiers: {
                         $elemMatch: {
                             isRead: false
                         }
@@ -92,7 +90,7 @@ const listAll = ({ limit = 100, start = 0 }) => {
             },
             {
                 $unwind: {
-                    path: "$users",
+                    path: "$notifiers",
                     preserveNullAndEmptyArrays: true
                 }
             }

@@ -100,7 +100,9 @@
 
         <article>
             <p id="status">Not connected</p>
-            <ul id="stocksPrice"></ul>
+            <div>
+                <input type="number" id="userId" placeholder="Enter user ID" />
+            </div>
             <div id="notificaitons"></div>
         </article>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -151,8 +153,11 @@
                 if (data.length) {
                     $("#notificaitons").html("");
                     data.forEach(d => {
+                        console.log("Message:", d.message);
                         $("#notificaitons").append("<p>" + d.message + "</p>");
                     });
+                } else {
+                    $("#notificaitons").html("You dont have any notifics.");
                 }
             }
 
@@ -161,10 +166,10 @@
             }
 
             function addMessage() {
-                websocket.send(456);
+                let _id = $("#userId").val();
+                websocket.send(_id);
             }
             setInterval(function() {
-                //let stockprice = Math.floor(Math.random() * 1000);
                 addMessage();
             }, 2000);
         </script>
