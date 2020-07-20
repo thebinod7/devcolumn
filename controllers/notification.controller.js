@@ -17,12 +17,7 @@ const add = payload => {
 
 const list = async userid => {
     let filter = {};
-    // let q = JSON.parse(query);
-    // if (q.lastFetchedAt) {
-    //     filter = { created_at: { $gt: new Date(q.lastFetchedAt) } };
-    // }
     let user = userid.toString();
-    console.log(user);
     let data = await NotifyModel.aggregate([
         { $sort: { created_at: -1 } },
         { $limit: 15 },
@@ -42,11 +37,10 @@ const list = async userid => {
             }
         }
     ]);
-    console.log("Data:", data);
     return data;
 };
 
-const updateRead = (notifyId, userId) => {
+const markAsRead = (notifyId, userId) => {
     let user = userId.toString();
     return NotifyModel.update(
         { _id: notifyId, "notifiers.userId": user },
@@ -80,4 +74,4 @@ const listAll = ({ limit = 100, start = 0, user }) => {
         ]
     });
 };
-module.exports = { add, list, listAll, updateRead };
+module.exports = { add, list, listAll, markAsRead };
