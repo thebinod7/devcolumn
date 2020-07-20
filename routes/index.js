@@ -21,7 +21,7 @@ router.post("/notify", async (req, res, next) => {
 router.post("/mark-read/:notify_id", async (req, res, next) => {
     NotifyController.markAsRead(req.params.notify_id, req.body.userId)
         .then(d => {
-            let wss = req.wss;
+            // let wss = req.wss;
             // wss.on("connection", function connection(ws) {
             //     ws.on("message", function incoming(query) {
             //         wss.clients.forEach(function each(socket) {
@@ -44,7 +44,7 @@ router.post("/mark-read/:notify_id", async (req, res, next) => {
 });
 
 router.get("/listall", (req, res, next) => {
-    NotifyController.list()
+    NotifyController.list(123)
         .then(d => res.json(d))
         .catch(e => next(e));
 });
